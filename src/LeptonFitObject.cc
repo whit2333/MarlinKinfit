@@ -190,7 +190,8 @@ double LeptonFitObject::getSecondDerivative( int iMeta, int ilocal , int jlocal 
   case 1: // px
     if      ( ilocal==0 && jlocal==0 ) return 2*pt3*cphi;
     else if ( ilocal==0 && jlocal==2 ) return pt2*sphi;
-    else if ( ilocal==2 && jlocal==2 ) return px;
+    //    else if ( ilocal==2 && jlocal==2 ) return px; // "-" in orig code, DJ fixed 2015may27
+    else if ( ilocal==2 && jlocal==2 ) return -px;
     else return 0;
     break;
   case 2: // py

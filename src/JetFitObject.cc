@@ -277,7 +277,8 @@ double JetFitObject::getSecondDerivative( int iMeta, int ilocal , int jlocal , i
     break;
   case 3:
     if      ( ilocal==0 && jlocal==0 ) return d2pdE2*ctheta;
-    else if ( ilocal==0 && jlocal==1 ) return dptdE;
+    //    else if ( ilocal==0 && jlocal==1 ) return dptdE;
+    else if ( ilocal==0 && jlocal==1 ) return -dptdE; // this is "-" in the orig JetFitObject, DJ fixed 2015may27
     else if ( ilocal==0 && jlocal==2 ) return 0;
     else if ( ilocal==1 && jlocal==1 ) return -pz;
     else if ( ilocal==1 && jlocal==2 ) return 0;
