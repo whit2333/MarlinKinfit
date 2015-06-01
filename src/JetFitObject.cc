@@ -112,13 +112,29 @@ JetFitObject::JetFitObject(double E, double theta, double phi,
 // destructor
 JetFitObject::~JetFitObject() {}
 
+JetFitObject::JetFitObject (const JetFitObject& rhs)
+{
+  //std::cout << "copying JetFitObject with name " << rhs.name << std::endl;
+  JetFitObject::assign (rhs);
+}
+
+JetFitObject& JetFitObject::operator= (const JetFitObject& rhs) {
+  if (this != &rhs) {
+    assign (rhs); // calls virtual function assign of derived class
+  }
+  return *this;
+}
+
 JetFitObject *JetFitObject::copy() const {
   return new JetFitObject (*this);
 }
     
 JetFitObject& JetFitObject::assign (const BaseFitObject& source) {
   if (const JetFitObject *psource = dynamic_cast<const JetFitObject *>(&source)) {
-    if (psource != this) *this = *psource;
+    if (psource != this) {
+      ParticleFitObject::assign (source);
+      // only mutable data members, need not to be copied, if cache is invalid
+    }
   }
   else {
     assert (0);

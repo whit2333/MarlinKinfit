@@ -45,13 +45,29 @@ LeptonFitObject::LeptonFitObject(double ptinv, double theta, double phi,
 // destructor
 LeptonFitObject::~LeptonFitObject() {}
 
+LeptonFitObject::LeptonFitObject (const LeptonFitObject& rhs)
+{
+  //std::cout << "copying LeptonFitObject with name" << rhs.name << std::endl;
+  LeptonFitObject::assign (rhs);
+}
+
+LeptonFitObject& LeptonFitObject::operator= (const LeptonFitObject& rhs) {
+  if (this != &rhs) {
+    assign (rhs); // calls virtual function assign of derived class
+  }
+  return *this;
+}
+
 LeptonFitObject *LeptonFitObject::copy() const {
   return new LeptonFitObject (*this);
 }
     
 LeptonFitObject& LeptonFitObject::assign (const BaseFitObject& source) {
   if (const LeptonFitObject *psource = dynamic_cast<const LeptonFitObject *>(&source)) {
-    if (psource != this) *this = *psource;
+    if (psource != this) {
+      ParticleFitObject::assign (source);
+      // only mutable data members, need not to be copied, if cache is invalid
+    }
   }
   else {
     assert (0);

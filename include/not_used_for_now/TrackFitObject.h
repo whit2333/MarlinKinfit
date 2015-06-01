@@ -71,21 +71,21 @@ class TrackFitObject: public BaseFitObject {
     /// Default constructor
     TrackFitObject(const char *name_ = 0                   ///< Optional name
                   );
+                  
     /// Copy Constructor
     TrackFitObject (const TrackFitObject& rhs              ///< Source object
                    );
+                   
     /// Assignment
     TrackFitObject& operator= (const TrackFitObject& rhs   ///< Source object
                    );
-    /// Return a new copy of itself
-    virtual TrackFitObject *copy() const = 0;
+                   
+    /// Destructor
+    virtual ~TrackFitObject();
     
     /// Assign from anther object, if of same type
     virtual TrackFitObject& assign (const BaseFitObject& source   ///< The source object
-                                 ) = 0;
-    
-    /// Destructor
-    virtual ~TrackFitObject();
+                                 );
     
     /// Set value and measured flag of parameter ilocal; return=success
     virtual bool   setParam (int ilocal,         ///< Local parameter number
@@ -312,13 +312,14 @@ class TrackFitObject: public BaseFitObject {
   
     /// Maximum number of parameters
     enum {NPARMAX = 8};
-    
+    /// errors
+    double err[NPARMAX];
+
+/*    
     /// fit parameters
     double par[NPARMAX];
     /// measured parameters
     double mpar[NPARMAX];
-    /// errors
-    double err[NPARMAX];
     /// measured flag
     bool measured[NPARMAX];
     /// fixed flag
@@ -326,20 +327,21 @@ class TrackFitObject: public BaseFitObject {
     /// global paramter number for each parameter
     int globalParNum [NPARMAX];
     /// local covariance matrix
-    double cov [NPARMAX][NPARMAX];    
+    mutable double cov [NPARMAX][NPARMAX];    
     /// inverse of local covariance matrix
     mutable double covinv [NPARMAX][NPARMAX];   
     /// flag for valid cache
     mutable bool cachevalid; 
     /// flag for valid inverse covariance matrix
-    mutable bool covinvvalid; 
+    mutable bool covinvvalid;
+*/     
     
     // Cache variables
     mutable double chi2;               ///< chi^2
     mutable double resid[NPARMAX];     ///< residuals
     mutable bool   chi2contr[NPARMAX]; ///< contributes to chi2?
     
-    char *name;                        ///< object name (name string must be allocated and deleted outside object!)
+//    char *name;                        ///< object name (name string must be allocated and deleted outside object!)
     
 };
     

@@ -28,45 +28,52 @@ using std::isfinite;
 #include <cstring>
 
 TrackFitObject::TrackFitObject(const char *name_ )
-: cachevalid (false), covinvvalid (false), name (0)
+: BaseFitObject()
 {
   for (int i = 0; i < NPARMAX; ++i) {
-    fixed[i] = true;
-    measured [i] = false;
-    par[i] = mpar[ i] = err [i] = 0;
-    globalParNum[i] = -1;
-    for (int j = 0; j < NPARMAX; ++j) cov[i][j] = covinv[i][j] = 0; 
+    err [i] = 0;
   }
+  name = 0; 
   setName (name_);
 }
 
-TrackFitObject::TrackFitObject (const TrackFitObject& rhs) 
-: cachevalid (false), covinvvalid (false), name (0)
+// TrackFitObject::TrackFitObject (const TrackFitObject& rhs) 
+// : cachevalid (false), covinvvalid (false), name (0)
+// {
+//   copy (rhs);
+// }
+// 
+TrackFitObject::TrackFitObject (const TrackFitObject& rhs)
 {
-  copy (rhs);
+  std::cout << "copying TrackFitObject with name" << rhs.name << std::endl;
+  TrackFitObject::assign (rhs);
 }
+
+// TrackFitObject& TrackFitObject::operator= (const TrackFitObject& rhs) {
+//   if (&rhs != this) copy (rhs);
+//   return *this;
+// }
 TrackFitObject& TrackFitObject::operator= (const TrackFitObject& rhs) {
-  if (&rhs != this) copy (rhs);
+  if (this != &rhs) {
+    assign (rhs); // calls virtual function assign of derived class
+  }
   return *this;
 }
 
-void TrackFitObject::copy (const TrackFitObject& source) 
+TrackFitObject& TrackFitObject::assign (const BaseFitObject& source) 
 {
-  cachevalid = false;
-  covinvvalid = false;
-  name = 0;
-  for (int i = 0; i < NPARMAX; i++) {
-    par[i] = source.par[i];
-    mpar[i] = source.mpar[i];
-    err[i] = source.err[i];
-    measured[i] = source.measured[i];
-    fixed[i] = source.fixed[i];
-    globalParNum[i] = source.globalParNum[i];
-    for (int j = 0; j < NPARMAX; j++) {
-      cov[i][j] = source.cov[i][j];
+  if (const TrackFitObject *psource = dynamic_cast<const TrackFitObject *>(&source)) {
+    if (psource != this) {
+      BaseFitObject::assign (source);
+      for (int i = 0; i < NPARMAX; i++)  err[i] = psource->err[i];
+      // mutable data members need not to be copied, if cache is invalid
     }
-  } 
-  setName (source.name);
+  }
+  else {
+    assert (0);
+  }
+  return *this;
+  
 }
 
 

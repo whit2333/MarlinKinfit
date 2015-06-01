@@ -107,13 +107,29 @@ ISRPhotonFitObject::ISRPhotonFitObject(double px, double py, double pz,
 ISRPhotonFitObject::~ISRPhotonFitObject() {}
 
 
+ISRPhotonFitObject::ISRPhotonFitObject (const ISRPhotonFitObject& rhs)
+{
+  //std::cout << "copying ISRPhotonFitObject with name" << rhs.name << std::endl;
+  ISRPhotonFitObject::assign (rhs);
+}
+
+ISRPhotonFitObject& ISRPhotonFitObject::operator= (const ISRPhotonFitObject& rhs) {
+  if (this != &rhs) {
+    assign (rhs); // calls virtual function assign of derived class
+  }
+  return *this;
+}
+
 ISRPhotonFitObject *ISRPhotonFitObject::copy() const {
   return new ISRPhotonFitObject (*this);
 }
     
 ISRPhotonFitObject& ISRPhotonFitObject::assign (const BaseFitObject& source) {
   if (const ISRPhotonFitObject *psource = dynamic_cast<const ISRPhotonFitObject *>(&source)) {
-    if (psource != this) *this = *psource;
+    if (psource != this) {
+      ParticleFitObject::assign (source);
+      // only mutable data members, need not to be copied, if cache is invalid
+    }
   }
   else {
     assert (0);

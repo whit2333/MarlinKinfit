@@ -24,6 +24,14 @@ class NeutrinoFitObject : public ParticleFitObject {
   public:
     NeutrinoFitObject(double E, double theta, double phi, 
                       double DE=1, double Dtheta=0.1, double Dphi=0.1);
+                 
+    /// Copy constructor
+    NeutrinoFitObject (const NeutrinoFitObject& rhs              ///< right hand side
+                   );
+    /// Assignment               
+    NeutrinoFitObject& operator= (const NeutrinoFitObject& rhs   ///< right hand side
+                             );
+
     virtual ~NeutrinoFitObject();
     
     /// Return a new copy of itself

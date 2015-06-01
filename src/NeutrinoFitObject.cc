@@ -39,13 +39,29 @@ NeutrinoFitObject::NeutrinoFitObject(double E, double theta, double phi,
 // destructor
 NeutrinoFitObject::~NeutrinoFitObject() {}
 
+NeutrinoFitObject::NeutrinoFitObject (const NeutrinoFitObject& rhs)
+{
+  //std::cout << "copying NeutrinoFitObject with name" << rhs.name << std::endl;
+  NeutrinoFitObject::assign (rhs);
+}
+
+NeutrinoFitObject& NeutrinoFitObject::operator= (const NeutrinoFitObject& rhs) {
+  if (this != &rhs) {
+    assign (rhs); // calls virtual function assign of derived class
+  }
+  return *this;
+}
+
 NeutrinoFitObject *NeutrinoFitObject::copy() const {
   return new NeutrinoFitObject (*this);
 }
     
 NeutrinoFitObject& NeutrinoFitObject::assign (const BaseFitObject& source) {
   if (const NeutrinoFitObject *psource = dynamic_cast<const NeutrinoFitObject *>(&source)) {
-    if (psource != this) *this = *psource;
+    if (psource != this){
+      ParticleFitObject::assign (source);
+      // only mutable data members, need not to be copied, if cache is invalid
+    }
   }
   else {
     assert (0);
@@ -149,7 +165,7 @@ double NeutrinoFitObject::getDE(int ilocal) const {
 
 double NeutrinoFitObject::getFirstDerivative( int iMeta, int ilocal , int metaSet ) const {
   // iMeta = intermediate variable (i.e. E,px,py,pz)
-  // ilocal = local variable (ptinv, theta, phi)
+  // ilocal = local variable (E, theta, phi)
   // metaSet = which set of intermediate varlables
 
   assert (metaSet==0); // only defined for E,px,py,pz  

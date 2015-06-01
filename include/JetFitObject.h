@@ -59,6 +59,14 @@ class JetFitObject : public ParticleFitObject {
     JetFitObject(double E, double theta, double phi, 
                  double DE, double Dtheta, double Dphi, 
                  double m = 0);
+                 
+    /// Copy constructor
+    JetFitObject (const JetFitObject& rhs              ///< right hand side
+                   );
+    /// Assignment               
+    JetFitObject& operator= (const JetFitObject& rhs   ///< right hand side
+                             );
+
     virtual ~JetFitObject();
     
     /// Return a new copy of itself

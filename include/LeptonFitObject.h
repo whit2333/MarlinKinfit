@@ -13,59 +13,67 @@
 /// Class for leptons with (1/pt, eta, phi) in kinematic fits
 
 class LeptonFitObject : public ParticleFitObject {
- public:
+  public:
 
-  LeptonFitObject(double ptinv, double theta, double phi,
+    LeptonFitObject(double ptinv, double theta, double phi,
                   double Dptinv, double Dtheta, double Dphi,
                   double m = 0);
-  virtual ~LeptonFitObject();
+                 
+    /// Copy constructor
+    LeptonFitObject (const LeptonFitObject& rhs              ///< right hand side
+                   );
+    /// Assignment               
+    LeptonFitObject& operator= (const LeptonFitObject& rhs   ///< right hand side
+                             );
 
-  /// Return a new copy of itself
-  virtual LeptonFitObject *copy() const;
+    virtual ~LeptonFitObject();
 
-  /// Assign from anther object, if of same type
-  virtual LeptonFitObject& assign (const BaseFitObject& source   ///< The source object
+    /// Return a new copy of itself
+    virtual LeptonFitObject *copy() const;
+
+    /// Assign from anther object, if of same type
+    virtual LeptonFitObject& assign (const BaseFitObject& source   ///< The source object
                                    );
 
-  /// Get name of parameter ilocal
-  virtual const char *getParamName (int ilocal     ///< Local parameter number
-                                    ) const;
+    /// Get name of parameter ilocal
+    virtual const char *getParamName (int ilocal     ///< Local parameter number
+                                      ) const;
 
-  /// Read values from global vector, readjust vector; return: significant change
-  virtual bool   updateParams (double p[],   ///< The parameter vector
-                               int idim      ///< Length of the vector
-                               );
+    /// Read values from global vector, readjust vector; return: significant change
+    virtual bool   updateParams (double p[],   ///< The parameter vector
+                                 int idim      ///< Length of the vector
+                                 );
 
-  // these depend on actual parametrisation!
-  virtual double getDPx(int ilocal) const;
-  virtual double getDPy(int ilocal) const;
-  virtual double getDPz(int ilocal) const;
-  virtual double getDE(int ilocal) const;
+    // these depend on actual parametrisation!
+    virtual double getDPx(int ilocal) const;
+    virtual double getDPy(int ilocal) const;
+    virtual double getDPz(int ilocal) const;
+    virtual double getDE(int ilocal) const;
 
-  /// Get chi squared from measured and fitted parameters
-  //  virtual double getChi2() const;
+    /// Get chi squared from measured and fitted parameters
+    //  virtual double getChi2() const;
 
-  double getFirstDerivative( int iMeta, int ilocal , int metaSet ) const; // derivative of intermediate variable iMeta wrt local parameter ilocal
-  double getSecondDerivative( int iMeta, int ilocal , int jlocal, int metaSet ) const; // derivative of intermediate variable iMeta wrt local parameter ilocal
+    double getFirstDerivative( int iMeta, int ilocal , int metaSet ) const; // derivative of intermediate variable iMeta wrt local parameter ilocal
+    double getSecondDerivative( int iMeta, int ilocal , int jlocal, int metaSet ) const; // derivative of intermediate variable iMeta wrt local parameter ilocal
 
-  virtual int getNPar() const {return NPAR;}
+    virtual int getNPar() const {return NPAR;}
 
- protected:
+  protected:
 
-  //  virtual void initCov();
+    //  virtual void initCov();
 
-  void updateCache() const;
+    void updateCache() const;
 
-  //    mutable bool cachevalid;
+    //    mutable bool cachevalid;
 
-  mutable double ctheta, stheta, stheta2, cphi, sphi, cottheta,
-    p2, p, e, e2, pt, pt2, pt3, px, py, pz, dpdptinv, dpdtheta, dptdptinv,
-    dpxdptinv, dpydptinv, dpzdptinv, dpxdtheta, dpydtheta, dpzdtheta, dpxdphi, dpydphi,
-    chi2, dEdptinv, dEdtheta, dEdp;
+    mutable double ctheta, stheta, stheta2, cphi, sphi, cottheta,
+      p2, p, e, e2, pt, pt2, pt3, px, py, pz, dpdptinv, dpdtheta, dptdptinv,
+      dpxdptinv, dpydptinv, dpzdptinv, dpxdtheta, dpydtheta, dpzdtheta, dpxdphi, dpydphi,
+      chi2, dEdptinv, dEdtheta, dEdp;
 
-  static bool adjustPtinvThetaPhi (double& m, double &ptinv, double& theta, double& phi);
+    static bool adjustPtinvThetaPhi (double& m, double &ptinv, double& theta, double& phi);
 
-  enum {NPAR=3};
+    enum {NPAR=3};
 
 };
 

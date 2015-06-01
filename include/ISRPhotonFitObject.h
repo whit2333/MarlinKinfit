@@ -47,8 +47,15 @@ class ISRPhotonFitObject : public ParticleFitObject {
   public:
     ISRPhotonFitObject(double px, double py, double pz,                   /// initial values for photon (p_x,p_y fix)
                         double b_, double PzMaxB_, double PzMinB_ = 0.);  /// photon spectrum parametrization (see above)
+    
+    /// Copy constructor
+    ISRPhotonFitObject (const ISRPhotonFitObject& rhs              ///< right hand side
+                   );
+    /// Assignment               
+    ISRPhotonFitObject& operator= (const ISRPhotonFitObject& rhs   ///< right hand side
+                             );
+                             
     virtual ~ISRPhotonFitObject();
-
     
     /// Return a new copy of itself
     virtual ISRPhotonFitObject *copy() const;

@@ -32,6 +32,22 @@ class SimplePhotonFitObject : public ParticleFitObject {
   public:
     SimplePhotonFitObject(double px, double py, double pz,   /// initial values for photon (p_x,p_y fix)
                  double Dpz);                          /// sigma for pz
+                 
+    /// Copy constructor
+    SimplePhotonFitObject (const SimplePhotonFitObject& rhs              ///< right hand side
+                   );
+    
+    /// Return a new copy of itself
+    virtual SimplePhotonFitObject *copy() const;
+    
+    /// Assign from anther object, if of same type
+    virtual SimplePhotonFitObject& assign (const BaseFitObject& source   ///< The source object
+                                 );
+    
+    /// Assignment               
+    SimplePhotonFitObject& operator= (const SimplePhotonFitObject& rhs   ///< right hand side
+                             );
+
     virtual ~SimplePhotonFitObject();
     
     /// Get name of parameter ilocal

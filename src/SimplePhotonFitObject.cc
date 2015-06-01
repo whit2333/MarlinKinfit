@@ -60,6 +60,36 @@ SimplePhotonFitObject::SimplePhotonFitObject(double px, double py, double pz,
 // destructor
 SimplePhotonFitObject::~SimplePhotonFitObject() {}
 
+SimplePhotonFitObject::SimplePhotonFitObject (const SimplePhotonFitObject& rhs)
+{
+  //std::cout << "copying SimplePhotonFitObject with name" << rhs.name << std::endl;
+  SimplePhotonFitObject::assign (rhs);
+}
+
+SimplePhotonFitObject& SimplePhotonFitObject::operator= (const SimplePhotonFitObject& rhs) {
+  if (this != &rhs) {
+    assign (rhs); // calls virtual function assign of derived class
+  }
+  return *this;
+}
+
+SimplePhotonFitObject *SimplePhotonFitObject::copy() const {
+  return new SimplePhotonFitObject (*this);
+}
+    
+SimplePhotonFitObject& SimplePhotonFitObject::assign (const BaseFitObject& source) {
+  if (const SimplePhotonFitObject *psource = dynamic_cast<const SimplePhotonFitObject *>(&source)) {
+    if (psource != this) {
+      ParticleFitObject::assign (source);
+      // only mutable data members, need not to be copied, if cache is invalid
+    }
+  }
+  else {
+    assert (0);
+  }
+  return *this;
+}
+
 const char *SimplePhotonFitObject::getParamName (int ilocal) const {
   switch (ilocal) {
     case 0: return "P_x";

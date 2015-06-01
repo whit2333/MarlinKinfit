@@ -53,17 +53,36 @@ BaseFitObject::BaseFitObject (const BaseFitObject& rhs)
 : name(0)
 {
   //std::cout << "copying BaseFitObject with name" << rhs.name << std::endl;
-  if (rhs.name) setName(rhs.name);
-  else setName ("???");
-  invalidateCache();
+  BaseFitObject::assign (rhs);
 }
+
 BaseFitObject& BaseFitObject::operator= (const BaseFitObject& rhs) {
   if (this != &rhs) {
-    if (rhs.name) setName(rhs.name);
-    else setName ("???");
+    assign (rhs); // calls virtual function assign of derived class
   }
   return *this;
 }
+
+    
+BaseFitObject& BaseFitObject::assign (const BaseFitObject& source) {
+  if (&source != this) {
+    name = 0; 
+    setName(source.name);
+    for (int i =0; i < BaseDefs::MAXPAR; ++i) {
+      par[i]          = source.par[i];
+      mpar[i]         = source.mpar[i];
+      measured[i]     = source.measured[i];
+      fixed[i]        = source.fixed[i];
+      globalParNum[i] = source.globalParNum[i];
+      for (int j = 0; j < BaseDefs::MAXPAR; ++j) 
+        cov[i][j] = source.cov[i][j];
+    }  
+    covinvvalid = false;
+    cachevalid = false;
+  }
+  return *this;
+}
+
     
 BaseFitObject::~BaseFitObject() {
   //std::cout << "destroying BaseFitObject with name" << name << std::endl;
@@ -533,7 +552,7 @@ void BaseFitObject::addToDerivatives (double der[], int idim,
 }
 
 
-void BaseFitObject::initCov() const {
+void BaseFitObject::initCov()  {
   // DANIEL moved to BaseFitObject 
   for (int i = 0; i < getNPar(); ++i) {
     for (int j = 0; j < getNPar(); ++j) {

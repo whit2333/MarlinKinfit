@@ -127,7 +127,7 @@ class BaseFitObject {
     
     /// Assign from anther object, if of same type
     virtual BaseFitObject& assign (const BaseFitObject& source   ///< The source object
-                                  ) = 0;
+                                  );
     
     /// Set value and measured flag of parameter i; return: significant change
     virtual bool setParam (int ilocal,         ///< Local parameter number
@@ -304,7 +304,7 @@ class BaseFitObject {
 					int metaSet 
 					) const = 0;
                                  
-    virtual void initCov() const;
+    virtual void initCov();
 
     virtual double getError2 (double der[], int metaset) const;
 
@@ -342,7 +342,7 @@ class BaseFitObject {
       /// global paramter number for each parameter
       int globalParNum [BaseDefs::MAXPAR];
       /// local covariance matrix
-      mutable double cov [BaseDefs::MAXPAR][BaseDefs::MAXPAR];    
+      double cov [BaseDefs::MAXPAR][BaseDefs::MAXPAR];    
       /// inverse pf local covariance matrix
       mutable double covinv [BaseDefs::MAXPAR][BaseDefs::MAXPAR];    
       /// flag for valid inverse covariance matrix

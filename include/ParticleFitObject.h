@@ -64,8 +64,22 @@ class ParticleFitObject: public BaseFitObject {
   public:
     /// Default constructor
     ParticleFitObject();
+    
+        
+    /// Copy constructor
+    ParticleFitObject (const ParticleFitObject& rhs              ///< right hand side
+                   );
+                   
+    /// Assignment               
+    ParticleFitObject& operator= (const ParticleFitObject& rhs   ///< right hand side
+                             );
+
     /// Virtual destructor
     virtual ~ParticleFitObject();
+    
+    /// Assign from anther object, if of same type
+    virtual ParticleFitObject& assign (const BaseFitObject& source   ///< The source object
+                                  );
 
     /// Set mass of particle; return=success
     virtual bool setMass (double mass_);

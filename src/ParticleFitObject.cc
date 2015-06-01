@@ -72,6 +72,19 @@ ParticleFitObject::ParticleFitObject()
 ParticleFitObject::~ParticleFitObject()
 {}
 
+ParticleFitObject::ParticleFitObject (const ParticleFitObject& rhs)
+{
+  //std::cout << "copying ParticleFitObject with name" << rhs.name << std::endl;
+  ParticleFitObject::assign (rhs);
+}
+
+ParticleFitObject& ParticleFitObject::operator= (const ParticleFitObject& rhs) {
+  if (this != &rhs) {
+    assign (rhs); // calls virtual function assign of derived class
+  }
+  return *this;
+}
+
 bool ParticleFitObject::setMass (double mass_) {
   if (!isfinite(mass_)) return false;
   if (mass == mass_) return true;
@@ -79,6 +92,23 @@ bool ParticleFitObject::setMass (double mass_) {
   mass = std::abs(mass_);
   return true;
 }
+
+    
+ParticleFitObject& ParticleFitObject::assign (const BaseFitObject& source) {
+  if (const ParticleFitObject *psource = dynamic_cast<const ParticleFitObject *>(&source)) {
+    if (psource != this) {
+      BaseFitObject::assign (source);
+      mass = psource->mass;
+      for (int i =0; i < BaseDefs::MAXPAR; ++i)
+        paramCycl[i] = psource->paramCycl[i];
+    }
+  }
+  else {
+    assert (0);
+  }
+  return *this;
+}
+
 
 double ParticleFitObject::getMass () const {
   return mass;
