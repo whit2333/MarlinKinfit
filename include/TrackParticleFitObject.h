@@ -1,5 +1,5 @@
 /*! \file
- *  \brief Declares class LeptonFitObject
+ *  \brief Declares class TrackParticleFitObject
  *
  *
  */

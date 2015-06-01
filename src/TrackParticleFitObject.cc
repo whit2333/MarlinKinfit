@@ -1,8 +1,13 @@
 /*! \file
  *  \brief Implements class TrackParticleFitObject
- *  TrackParticleFitObject works similiar to JetFitObject, but it uses a 1/pt, eta, phi parametrization for the
- *  leptons, which is e.g. more appropriate for electrons.
- *  Especially the covarianz matrix differs from a common E, theta, phi parametrization.
+ *  TrackParticleFitObject takes an LCIO track or trackstate (parameters & covariance) as input.
+ *  it knows about the 4-momentum and "decay plane" of the TrackParticleObject
+ *   "decay plane" is the plane defined by the IP and the tangent to the track at PCA
+ *  At present it considers the track only at the PCA:
+ *    i.e. the momentum/decay plane are considered only at the PCA, not at a general position along the helix
+ *    thie means it's no good for fitting (significantly) displaced vertices 
+ *       in which the tracks have bent significantly between the PCA and vertex positions 
+ *    this should be improved in a future update by including extra parameters (as was done for the original Track-based classes)
  */
 
 #include "TrackParticleFitObject.h"
@@ -74,15 +79,10 @@ void TrackParticleFitObject::initialise( const double* _ppars, const double* _co
   initCov();
   setMass (m);
 
-  //  cout << "parameters: ";
   for (int i=0; i<NPAR; i++) {
-    //setParam( i, _ppars[i], true, false ); // measured, un-fixed
-    //setMParam( i, _ppars[i] );
     setParam ( i, _ppars[i]/parfact[i], true, false );
     setMParam( i, _ppars[i]/parfact[i] );
-    //    cout << std::setw(10) << _ppars[i] << " ";
   }
-  //  cout << endl;
 
   setCov( iD0   , iD0    , _cov[ 0] / (parfact[iD0   ]*parfact[iD0   ]) ); // d0  d0
   setCov( iPhi0 , iD0    , _cov[ 1] / (parfact[iPhi0 ]*parfact[iD0   ]) ); // phi d0
@@ -104,22 +104,6 @@ void TrackParticleFitObject::initialise( const double* _ppars, const double* _co
   paramCycl[iPhi0]=2.*M_PI/parfact[iPhi0 ];
 
   invalidateCache();
-
-  //  cout << "fourmom = " << getFourMomentum() << endl;
-
-  // cout << "errors:     ";
-  // for (int i=0; i<NPAR; i++) {
-  //   cout << std::setw(10) << sqrt(getCov(i,i)) << " ";
-  // }
-  // cout << endl;
-  // 
-  // cout << "correl matrix:" << endl;
-  // for (int i=0; i<NPAR; i++) {
-  //   for (int j=0; j<NPAR; j++) {
-  //     cout << std::setw(10) << getCov(i,j)/sqrt(getCov(i,i)*getCov(j,j)) << " ";
-  //   }
-  //   cout << endl;
-  // }
 
   return;
 }
@@ -174,9 +158,6 @@ const char *TrackParticleFitObject::getParamName (int ilocal) const {
 }
 
 bool TrackParticleFitObject::updateParams (double p[], int idim) {
-
-  //  cout << "TrackParticleFitObject::updateParams " << getName() << endl;
-
   invalidateCache();
 
   double tempPar[NPAR]={0};
