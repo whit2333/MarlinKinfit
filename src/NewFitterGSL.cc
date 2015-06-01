@@ -194,10 +194,13 @@ double NewFitterGSL::fit() {
     }
     
     // test convergence: 
-    if (gsl_blas_dasum (dxscal) < 1E-6*idim) {
-      converged = true;
-      break;
-    }
+    float sum_dxscal = gsl_blas_dasum (dxscal);
+    sum_dxscal/=idim;
+    // DANIEL moved to later, together with all the other convergence tests
+    // if (sum_dxscal < 1E-6*idim) {
+    //   converged = true;
+    //   break;
+    // }
     
     double alpha = 1;
     double mu = 0;
@@ -205,33 +208,60 @@ double NewFitterGSL::fit() {
     
     calcLimitedDx (alpha, mu, xnew, imode, x, v2, dx, dxscal, perr, M, Mscal, W, v1);
 
+    // DANIEL adds new convergence criteria
+    // compare old and new values of x
+    double totDiff(0);
+    for (unsigned int  i = 0; i < x->size; ++i) {
+      double xx1=gsl_vector_get( x, i);
+      double xx2=gsl_vector_get( xnew, i);
+      totDiff+=fabs( (xx2-xx1)/ std::max( fabs(xx1), fabs(xx2) ) ); // fractional change
+    }
+    totDiff/=x->size; // average fractional change
+    // end DANIEL 
+
     gsl_blas_dcopy (xnew, x);    
 
     chi2new = calcChi2();
     //cout << "chi2: " << chi2old << " -> " << chi2new << endl;
+
+    double dChi2 = fabs (chi2new - chi2old);
+    
+    // DANIEL: consider if the contraints are satisfied
+    double sumCons(0);
+    std::vector<BaseHardConstraint*>* constraints = getConstraints();
+    for (size_t i=0; i<constraints->size(); i++) {
+      BaseHardConstraint* bc = constraints->at(i);
+      //cout << "constraint " << i << " " << bc << " " << bc->getValue() << endl;
+      double val = fabs(bc->getValue());
+      double err = fabs(bc->getError());
+      sumCons+=val/err; // normalise by the constraint resolution
+    }
+    sumCons/=constraints->size(); // average value of constraint
+
     
 //   *-- Convergence criteria 
 
     ++nit;
     if (nit > 200) ierr = 1;
     
-    converged = (abs (chi2new - chi2old) < 0.0001);
-                
-//     if (abs (chi2new - chi2old) >= 0.001)
-//       cout << "abs (chi2new - chi2old)=" << abs (chi2new - chi2old) << " -> try again\n";      
-//     if (fvalbest >= 1E-3)
-//       cout << "fvalbest=" << fvalbest << " -> try again\n";      
-//     if (fvalbest >= 1E-6 && abs(fvals[0]-fvalbest) >= 0.2*fvalbest )
-//       cout << "fvalbest=" << fvalbest  
-//            << ", abs(fvals[0]-fvalbest)=" << abs(fvals[0]-fvalbest)<< " -> try again\n";      
-//     if (stepbest >= 1E-3)
-//       cout << "stepbest=" << stepbest << " -> try again\n";      
-//     cout << "converged=" << converged << endl;
+    converged = dChi2 < 1e-4  // chisq has not changed significantly
+      && totDiff<1e-5         // "x" have not changed significantly
+      && sumCons<1e-3;        // constraints satisfied
+
     if (debug > 2 && converged) {
       cout << "abs (chi2new - chi2old)=" << abs (chi2new - chi2old) << "\n"      
            << "fvalbest=" << fvalbest << "\n"
            << "abs(fvals[0]-fvalbest)=" << abs(fvals[0]-fvalbest)<< "\n";      
     } 
+
+    
+    if (debug>2 && ( nit<5 || nit%50==0) )
+      cout << "iteration " << nit << " chisq old, new " << chi2old << " " << chi2new << " totDiff=" << 
+	totDiff << " sum_dxscal=" << sum_dxscal << " sumCons=" << sumCons << endl;
+
+    // DANIEL adds: update the old chisq
+    chi2old = chi2new;
+
  
   } while (!(converged || ierr));
   
