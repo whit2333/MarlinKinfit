@@ -49,6 +49,7 @@
  */ 
  
 #include "ParticleFitObject.h"
+#include "FourVector.h"
 
 #include <iostream>
 #undef NDEBUG
