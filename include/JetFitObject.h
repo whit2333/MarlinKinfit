@@ -40,6 +40,7 @@
 #define __JETFITOBJECT_H
 
 #include "ParticleFitObject.h"
+#include "FourVector.h"
 
 // Class JetFitObject
 /// Class for jets with (E, eta, phi) in kinematic fits
